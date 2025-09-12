@@ -109,7 +109,7 @@ graph TD
 #### 2. Configuration
 1.  **Clone the repository**:
     ```bash
-    git clone [https://github.com/Bastandern/interactive-honeynet-platform.git](https://github.com/Bastandern/interactive-honeynet-platform.git)
+    git clone https://github.com/Bastandern/interactive-honeynet-platform.git
     cd interactive-honeynet-platform
     ```
 2.  **Set Environment Variables**:
@@ -176,7 +176,7 @@ After waiting for some time to collect attack data, you can start building or us
 
 ### 📖 项目概述
 
-本项目是一个功能完整、高度自动化的网络安全实战平台。它通过部署多元化的蜜罐网络，实时捕获全球网络攻击，利用 ELK Stack 进行大数据分析与可视化，并结合 Python 脚本实现威胁情报关联与自动化主动防御，形成了一个从**“感知-分析-决策-响应”**的完整安全闭环。
+本项目是一个功能完整、高度自动化的网络安全实战平台。它通过部署多元化的蜜罐网络，实时捕获全球网络攻击，利用 ELK Stack 进行大数据分析与可视化，并结合 Python 脚本实现威胁情报关联与自动化主动防御，形成了一个从 **“感知-分析-决策-响应”** 的完整安全闭环。
 
 #### ✨ 设计理念
 
@@ -273,7 +273,7 @@ graph TD
 #### 2. 配置
 1.  **克隆仓库**:
     ```bash
-    git clone [https://github.com/Bastandern/interactive-honeynet-platform.git](https://github.com/Bastandern/interactive-honeynet-platform.git)
+    git clone https://github.com/Bastandern/interactive-honeynet-platform.git
     cd interactive-honeynet-platform
     ```
 2.  **配置环境变量**:
