@@ -27,7 +27,7 @@ This project is a fully functional, highly automated cybersecurity practical pla
 
 *The core output of the platform is a powerful, interactive, and multi-dimensional global situational awareness dashboard, providing one-stop intelligence analysis and decision support.*
 
-[](https://github.com/Bastandern/interactive-honeynet-platform/blob/main/assets/images/dashboard_overview.png)
+![](https://github.com/Bastandern/interactive-honeynet-platform/blob/main/assets/images/dashboard_overview.png)
 
 ---
 
@@ -191,7 +191,7 @@ After waiting for some time to collect attack data, you can start building or us
 
 *平台的核心产出是一个功能强大的、可交互的、多维度的全局安全态势感知仪表盘，提供一站式的情报分析与决策支持。*
 
-[](https://github.com/Bastandern/interactive-honeynet-platform/blob/main/assets/images/dashboard_overview.png)
+![](https://github.com/Bastandern/interactive-honeynet-platform/blob/main/assets/images/dashboard_overview.png)
 
 ---
 
