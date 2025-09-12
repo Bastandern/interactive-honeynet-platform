@@ -1,0 +1,11 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/wordpot/wordpot.log
+
+  tags: ["wordpot"]
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  pipeline: wordpot-pipeline

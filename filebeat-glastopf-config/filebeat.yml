@@ -1,0 +1,11 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/glastopf/glastopf.log
+
+  tags: ["glastopf"]
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  pipeline: geoip-pipeline

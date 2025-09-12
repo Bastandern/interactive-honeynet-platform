@@ -1,0 +1,20 @@
+{
+  "cowrie-geoip" : {
+    "processors" : [
+      {
+        "rename" : {
+          "field" : "src_ip",
+          "target_field" : "source.ip",
+          "ignore_missing" : true
+        }
+      },
+      {
+        "geoip" : {
+          "field" : "source.ip",
+          "target_field" : "source.geo",
+          "ignore_missing" : true
+        }
+      }
+    ]
+  }
+}

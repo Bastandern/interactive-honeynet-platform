@@ -1,0 +1,156 @@
+# Docker Compose file version
+version: '3.7'
+
+# --- Service Definitions ---
+services:
+
+  # --- Core Service 1: Elasticsearch ---
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.9
+    container_name: es-container
+    restart: always
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    volumes:
+      - es-data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+    networks:
+      - honeynet-network
+    # Healthcheck ensures dependent services wait until Elasticsearch is fully operational.
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-f", "http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  # --- Core Service 2: Kibana ---
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.9
+    container_name: kibana-container
+    restart: always
+    ports:
+      - "5601:5601"
+    # Ensures Kibana only starts after Elasticsearch passes its healthcheck.
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - honeynet-network
+
+  # --- Honeypot Sensor 1: Cowrie (SSH & Telnet) ---
+  cowrie:
+    image: cowrie/cowrie:latest
+    container_name: cowrie-honeypot
+    restart: always
+    ports:
+      - "2222:2222"
+      - "2223:2223"
+    volumes:
+      - cowrie-etc:/cowrie/cowrie-git/etc
+      - cowrie-var:/cowrie/cowrie-git/var
+      - ./elasticsearch.py:/cowrie/cowrie-git/src/cowrie/output/elasticsearch.py:ro
+    networks:
+      - honeynet-network
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+
+  # --- Honeypot Sensor 2: Wordpot (Wordpress) ---
+  wordpot:
+    image: dtagdevsec/wordpot:24.04.1
+    container_name: wordpot-honeypot
+    restart: always
+    user: "0:0"  # Run as root to prevent internal file permission issues.
+    ports:
+      - "8080:80"
+    volumes:
+      - wordpot-logs:/opt/wordpot/logs
+    networks:
+      - honeynet-network
+
+  # --- Honeypot Sensor 3: Glastopf (Web App) ---
+  glastopf:
+    image: decepot/glastopf
+    container_name: glastopf-honeypot
+    restart: always
+    user: "0:0"  # Run as root to prevent internal file permission issues.
+    ports:
+      - "8081:80"
+    volumes:
+      - glastopf-logs:/usr/src/app/glastopf/log
+    networks:
+      - honeynet-network
+
+  # --- Log Shipper 1: Filebeat for Wordpot ---
+  filebeat-wordpot:
+    image: docker.elastic.co/beats/filebeat:7.17.9
+    container_name: filebeat-wordpot-agent
+    restart: always
+    user: "0:0"
+    volumes:
+      # Mounts the Filebeat config (read-only) and shares the log volume from the honeypot.
+      - ./filebeat-wordpot-config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - wordpot-logs:/var/log/wordpot:ro
+    networks:
+      - honeynet-network
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      wordpot:
+        condition: service_started
+
+  # --- Log Shipper 2: Filebeat for Glastopf ---
+  filebeat-glastopf:
+    image: docker.elastic.co/beats/filebeat:7.17.9
+    container_name: filebeat-glastopf-agent
+    restart: always
+    user: "0:0"
+    volumes:
+      - ./filebeat-glastopf-config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - glastopf-logs:/var/log/glastopf:ro
+    networks:
+      - honeynet-network
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      glastopf:
+        condition: service_started
+
+  # --- Log Shipper 3: Filebeat for Cowrie ---
+  filebeat-cowrie:
+    image: docker.elastic.co/beats/filebeat:7.17.9
+    container_name: filebeat-cowrie-agent
+    restart: always
+    user: "0:0"
+    volumes:
+      - ./filebeat-cowrie-config/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
+      - cowrie-var:/var/log/cowrie:ro
+    networks:
+      - honeynet-network
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+      cowrie:
+        condition: service_started
+
+# --- Volume Definitions ---
+# Named volumes used for data persistence across container restarts.
+volumes:
+  es-data:
+    driver: local
+  cowrie-etc:
+    driver: local
+  cowrie-var:
+    driver: local
+  wordpot-logs:
+    driver: local
+  glastopf-logs:
+    driver: local
+
+# --- Network Definitions ---
+# Custom bridge network for isolated communication between services.
+networks:
+  honeynet-network:
+    driver: bridge

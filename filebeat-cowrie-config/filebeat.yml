@@ -1,0 +1,15 @@
+filebeat.inputs:
+- type: log
+  enabled: true
+  paths:
+    - /var/log/cowrie/log/cowrie/cowrie.json
+
+  json.keys_under_root: true
+  json.add_error_key: true
+  json.overwrite_keys: true
+
+  tags: ["cowrie"]
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  pipeline: cowrie-geoip

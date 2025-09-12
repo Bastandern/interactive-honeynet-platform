@@ -1,0 +1,38 @@
+{
+  "index_templates" : [
+    {
+      "name" : "honeypot_template",
+      "index_template" : {
+        "index_patterns" : [
+          "filebeat-*"
+        ],
+        "template" : {
+          "mappings" : {
+            "properties" : {
+              "geoip" : {
+                "properties" : {
+                  "location" : {
+                    "type" : "geo_point"
+                  }
+                }
+              },
+              "source" : {
+                "properties" : {
+                  "geo" : {
+                    "properties" : {
+                      "location" : {
+                        "type" : "geo_point"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "composed_of" : [ ],
+        "priority" : 500
+      }
+    }
+  ]
+}
